@@ -1,0 +1,11 @@
+  - PolicyDocument:
+      Version: 2012-10-17
+      Statement:
+        - Action:
+            - cloudwatch:GetDashboard
+            - cloudwatch:GetMetricWidgetImage
+            - ses:SendRawEmail
+          Effect: Allow
+          Resource:
+            - "*"
+    PolicyName: cloudwatchSendEmail

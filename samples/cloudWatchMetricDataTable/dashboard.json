@@ -1,0 +1,46 @@
+{
+    "widgets": [
+        {
+            "type": "metric",
+            "width": 24,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Invocations\"', 'Sum', 300)", "id": "lambda", "visible": false } ],
+                    [ { "expression": "SORT(lambda, SUM, DESC)", "label": "", "id": "sort" } ]
+                ],
+                "region": "us-east-1",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Lambda invocations: graph - zoom in on me to see data table 'zoom'"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 24,
+            "height": 12,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "updateOn": {
+                    "refresh": true,
+                    "timeRange": true
+                },
+                "params": {
+                    "MetricDataQueries": [
+                        {
+                            "Expression": "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Invocations\"', 'Sum', 300)",
+                            "Id": "lambda",
+                            "ReturnData": false
+                        },
+                        {
+                            "Expression": "SORT(lambda, SUM, DESC)",
+                            "Label": "",
+                            "Id": "sort"
+                        }
+                    ],
+                    "region": "us-east-1"
+                },
+                "title": "Lambda invocations: data table"
+            }
+        }    ]
+}

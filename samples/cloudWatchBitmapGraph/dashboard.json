@@ -1,0 +1,204 @@
+{
+    "widgets": [
+        {
+            "type": "metric",
+            "width": 24,
+            "height": 3,
+            "properties": {
+                "metrics": [
+                    [ "AWS/Lambda", "Invocations" ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Total Lambda invocations (interactive) - zoom in on me to see bitmaps zoom"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "updateOn": {
+                    "refresh": true,
+                    "resize": true,
+                    "timeRange": true
+                },
+                "params": {
+                    "graph": {
+                        "metrics": [
+                            [
+                                {
+                                    "expression": "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Invocations\"', 'Sum', 300)",
+                                    "id": "lambda",
+                                    "period": 300,
+                                    "visible": false
+                                }
+                            ],
+                            [
+                                {
+                                    "expression": "SORT(lambda, SUM, DESC)",
+                                    "label": "[sum: ${!SUM}]",
+                                    "id": "sort",
+                                    "stat": "Sum"
+                                }
+                            ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "us-east-1",
+                        "stat": "Average",
+                        "period": 300,
+                        "yAxis": {
+                            "left": {
+                                "label": "Count",
+                                "showUnits": false
+                            }
+                        }
+                    }
+                },
+                "title": "Lambda functions: by invocations (bitmap)"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "updateOn": {
+                    "refresh": true,
+                    "resize": true,
+                    "timeRange": true
+                },
+                "params": {
+                    "graph": {
+                        "metrics": [
+                            [
+                                {
+                                    "expression": "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Duration\"', 'p90', 300)",
+                                    "id": "lambda",
+                                    "visible": false
+                                }
+                            ],
+                            [
+                                {
+                                    "expression": "SORT(lambda, SUM, DESC)",
+                                    "label": "[avg: ${!AVG}ms]",
+                                    "id": "sort"
+                                }
+                            ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "us-east-1",
+                        "stat": "p90",
+                        "period": 300,
+                        "yAxis": {
+                            "left": {
+                                "label": "Milliseconds",
+                                "showUnits": false
+                            }
+                        }
+                    }
+                },
+                "title": "Lambda functions: by duration, p90 (bitmap)"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "updateOn": {
+                    "refresh": true,
+                    "resize": true,
+                    "timeRange": true
+                },
+                "params": {
+                    "graph": {
+                        "metrics": [
+                            [
+                                {
+                                    "expression": "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Errors\"', 'Sum', 300)",
+                                    "id": "lambda",
+                                    "period": 300,
+                                    "visible": false
+                                }
+                            ],
+                            [
+                                {
+                                    "expression": "SORT(lambda, SUM, DESC)",
+                                    "label": "[sum: ${!SUM}]",
+                                    "id": "e2",
+                                    "stat": "Sum"
+                                }
+                            ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "us-east-1",
+                        "stat": "Average",
+                        "period": 300,
+                        "yAxis": {
+                            "left": {
+                                "label": "Count",
+                                "showUnits": false
+                            }
+                        }
+                    }
+                },
+                "title": "Lambda functions: by errors (bitmap)"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "updateOn": {
+                    "refresh": true,
+                    "resize": true,
+                    "timeRange": true
+                },
+                "params": {
+                    "graph": {
+                        "metrics": [
+                            [
+                                {
+                                    "expression": "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Throttles\"', 'Sum', 300)",
+                                    "id": "lambda",
+                                    "visible": false
+                                }
+                            ],
+                            [
+                                {
+                                    "expression": "SORT(lambda, SUM, DESC)",
+                                    "label": "[sum: ${!SUM}]",
+                                    "id": "sort"
+                                }
+                            ]
+                        ],
+                        "view": "timeSeries",
+                        "stacked": false,
+                        "region": "us-east-1",
+                        "stat": "Average",
+                        "period": 300,
+                        "yAxis": {
+                            "left": {
+                                "label": "Count",
+                                "showUnits": false
+                            }
+                        }
+                    }
+                },
+                "title": "Lambda functions: by throttles (bitmap)"
+            }
+        }
+    ]
+}

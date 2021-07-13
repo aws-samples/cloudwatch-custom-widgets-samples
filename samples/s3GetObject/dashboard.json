@@ -1,0 +1,17 @@
+{
+    "widgets": [
+        {
+            "type": "custom",
+            "width": 24,
+            "height": 12,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "bucket": "custom-widget-demo-bucket",
+                    "key": "sample-report.html"
+                },
+                "title": "Sample S3 Report - Power stats"
+            }
+        }
+    ]
+}

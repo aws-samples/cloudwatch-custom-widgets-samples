@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
+BIN_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source $BIN_DIR/lib/bashFunctions
+readArgsIntoVars $*
+
+ROOT_DIR=$BIN_DIR/..
+SAMPLES_DIR=$ROOT_DIR/samples
+BUILD_DIR=$ROOT_DIR/build
+CFN_BUILD_DIR=$BUILD_DIR/cfn
+
+mkdir -p $CFN_BUILD_DIR
+
+# Go through all the sample code folders
+for sampleDir in $SAMPLES_DIR/*/ ; do
+    echo "$sampleDir"
+    dashboard=$(cat $sampleDir/dashboard.json | sed 's/^/          /')
+    permissions=$(cat $sampleDir/permissions.yaml | sed 's/^/      /')
+    tags=$(cat $sampleDir/tags | sed 's/^/        /')
+
+    # Go through each code file (*.js and *.py supported currently)
+    codePaths="$sampleDir/*.??"
+    for codePath in $codePaths; do
+        code=$(cat $codePath | sed 's/^/          /')
+        codeFirstLine="${code%%$'\n'*}"
+        description="${codeFirstLine# *[^ ]* }"
+        codeFilename=$(basename $codePath)
+        extension="${codeFilename##*.}"
+        functionName="${codeFilename%.*}-${extension}"
+        functionName="$(tr '[:lower:]' '[:upper:]' <<< ${functionName:0:1})${functionName:1}"  # capitalize
+        functionName="customWidget${functionName}"
+
+        if [ $extension == 'js' ]; then
+            handler="index.handler"
+            runtime="nodejs12.x"
+        else
+            handler="index.lambda_handler"
+            runtime="python3.7"       # python 3.8 doesn't suport inline zipfile yet
+        fi
+
+        # Create CloudFormation template
+        cfnPath=$CFN_BUILD_DIR/$functionName.yaml
+        echo ... creating $cfnPath
+        cat > $cfnPath <<EOF
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Template to create demo Custom Widget Lambda function. Change the stack name to set the name of the Lambda function. Once your stack is created, go to the CloudWatch Console Add widget modal to continue with your custom widget creation.
+
+Parameters:
+  DoCreateExampleDashboard:
+    Description: Do you want an example dashboard created that shows how the custom widget works?
+    Type: String
+    AllowedValues: [ 'Yes', 'No']
+    Default: 'No'
+
+Conditions:
+  CreateExampleDashboard: !Equals ["Yes", !Ref DoCreateExampleDashboard]
+
+Resources:
+  lambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+$code
+      Description: "$description"
+      FunctionName: !Sub \${AWS::StackName}
+      Handler: $handler
+      MemorySize: 128
+      Role: !GetAtt lambdaIAMRole.Arn
+      Runtime: $runtime
+      Timeout: 60
+      Tags:
+$tags
+
+  lambdaIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Effect: Allow
+                Resource:
+                  - !Sub arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${AWS::StackName}:*
+          PolicyName: lambda
+$permissions
+
+  lambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/\${AWS::StackName}
+      RetentionInDays: 7
+
+  demoDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Condition: CreateExampleDashboard
+    Properties:
+      DashboardName: !Sub \${AWS::StackName}-\${AWS::Region}
+      DashboardBody:
+        !Sub
+          >
+$dashboard
+EOF
+    done
+done
+

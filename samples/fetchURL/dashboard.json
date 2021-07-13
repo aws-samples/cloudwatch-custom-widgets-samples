@@ -1,0 +1,28 @@
+{
+    "widgets": [
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 12,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "url": "https://images-na.ssl-images-amazon.com/images/G/01/error/137._TTD_.jpg"
+                },
+                "title": "Fetch file from URL: Amazon Dog"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 12,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "url": "https://en.wikipedia.org/wiki/HTML"
+                },
+                "title": "Fetch file from URL: Wikipedia/HTML"
+            }
+        }
+    ]
+}

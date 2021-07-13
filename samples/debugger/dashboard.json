@@ -1,0 +1,52 @@
+{
+    "widgets": [
+        {
+            "type": "text",
+            "width": 24,
+            "height": 1,
+            "properties": {
+                "markdown": "Zoom in on the graph below to see how it affects the zoom parameters sent to the debugger Lamnda function"
+            }
+        },
+        {
+            "type": "metric",
+            "width": 24,
+            "height": 3,
+            "properties": {
+                "metrics": [
+                    [ "AWS/Lambda", "Invocations" ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Lambda invocations - zoom in on me"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 24,
+            "height": 40,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "param1": "value",
+                    "param2": [
+                        "entry1",
+                        "entry2"
+                    ],
+                    "param3": {
+                        "sub": 7
+                    }
+                },
+                "updateOn": {
+                    "refresh": true,
+                    "resize": true,
+                    "timeRange": true
+                },
+                "title": "Debugger Lambda function "
+            }
+        }
+    ]
+}

@@ -1,0 +1,138 @@
+{
+    "widgets": [
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "updateOn": {
+                    "refresh": true
+                },
+                "params": {
+                    "slices": [
+                        {
+                            "label": "Sky",
+                            "value": 135,
+                            "color": "blue"
+                        },
+                        {
+                            "label": "Shady",
+                            "value": 22.5,
+                            "color": "#6E4435"
+                        },
+                        {
+                            "label": "Sunny",
+                            "value": 45,
+                            "color": "#DDAF59"
+                        },
+                        {
+                            "label": "Sky",
+                            "value": 135,
+                            "color": "blue"
+                        }
+                    ]
+                },
+                "title": "Pyramid"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "updateOn": {
+                    "refresh": true
+                },
+                "params": {
+                    "slices": [
+                        {
+                            "value": 100,
+                            "label": "Right wall"
+                        },
+                        {
+                            "value": 130,
+                            "label": "Floor"
+                        },
+                        {
+                            "value": 130,
+                            "label": "Left wall"
+                        }
+                    ]
+                },
+                "title": "My living room corner"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 9,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "updateOn": {
+                    "refresh": true
+                },
+                "params": {
+                    "legendHeight": 75,
+                    "slices": [
+                        {
+                            "value": 16,
+                            "label": "Give you up"
+                        },
+                        {
+                            "value": 16,
+                            "label": "Let you down"
+                        },
+                        {
+                            "value": 16,
+                            "label": "Run around and desert you"
+                        },
+                        {
+                            "value": 16,
+                            "label": "Make you cry"
+                        },
+                        {
+                            "value": 16,
+                            "label": "Say goodbye"
+                        },
+                        {
+                            "value": 16,
+                            "label": "Tell a lie and hurt you"
+                        },
+                        {
+                            "value": 5,
+                            "label": "Give, never gonna give"
+                        }
+                    ]
+                },
+                "title": "Rick Astley is \"never gonna ...\""
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 9,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "updateOn": {
+                    "refresh": true
+                },
+                "params": {
+                    "slices": [
+                        {
+                            "label": "Remaining",
+                            "value": 90
+                        },
+                        {
+                            "label": "Eaten",
+                            "color": "white",
+                            "value": 10
+                        }
+                    ]
+                },
+                "title": "Pizza consumption"
+            }
+        }
+    ]
+}

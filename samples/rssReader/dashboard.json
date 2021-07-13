@@ -1,0 +1,69 @@
+{
+    "widgets": [
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 9,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "url": "http://status.aws.amazon.com/rss/cloudwatch-us-east-1.rss",
+                    "entryTag": "./channel/item",
+                    "fields": [ "title", "pubDate", "description" ]
+                },
+                "updateOn": {
+                    "refresh": true
+                },
+                "title": "RSS: CloudWatch status updates"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 9,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "url": "https://gizmodo.com/rss",
+                    "entryTag": "./channel/item",
+                    "fields": [ "title", "pubDate", "description" ]
+                },
+                "updateOn": {
+                    "refresh": true
+                },
+                "title": "RSS: Gizmodo"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 9,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "url": "http://www.reddit.com/r/Videos/top/.rss",
+                    "entryTag": "entry",
+                    "fields": [ "title", "updated", "content" ]
+                },
+                "title": "RSS: reddit, r/Videos"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 9,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "url": "http://aws.amazon.com/new/feed/",
+                    "entryTag": "./channel/item",
+                    "fields": [ "title", "pubDate", "description" ]
+                },
+                "updateOn": {
+                    "refresh": true
+                },
+                "title": "RSS: AWS What's New"
+            }
+        }
+  ]
+}

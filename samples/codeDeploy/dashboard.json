@@ -1,0 +1,37 @@
+{
+    "start": "-P7D",
+    "widgets": [
+        {
+            "type": "metric",
+            "width": 24,
+            "height": 3,
+            "properties": {
+                "metrics": [
+                    [ "AWS/Lambda", "Invocations" ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Lambda invocations - zoom in on me to see deployments change"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 24,
+            "height": 8,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "region": "${AWS::Region}"
+                },
+                "updateOn": {
+                    "refresh": true,
+                    "timeRange": true
+                },
+                "title": "Deployments"
+            }
+        }
+    ]
+}

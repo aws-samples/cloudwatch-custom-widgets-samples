@@ -1,0 +1,40 @@
+{
+    "widgets": [
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 12,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "service": "EC2",
+                    "api": "describeInstances",
+                    "params": {
+                        "Filters": [
+                            {
+                                "Name": "instance-state-name",
+                                "Values": [
+                                    "running"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "title": "Running EC2 Instances"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 12,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "service": "CloudWatch",
+                    "api": "listDashboards"
+                },
+                "title": "CloudWatch Dashboards"
+            }
+        }
+    ]
+}

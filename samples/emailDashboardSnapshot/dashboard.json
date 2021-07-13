@@ -1,0 +1,110 @@
+{
+    "widgets": [
+        {
+            "type": "custom",
+            "width": 24,
+            "height": 3,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "sesRegion": "${AWS::Region}",
+                    "width": 24,
+                    "height": 3
+                },
+                "title": "Email dashboard snapshot"
+            }
+        },
+        {
+            "type": "metric",
+            "width": 12,
+            "height": 9,
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Invocations\"', 'Sum', 300)", "id": "lambda", "period": 300, "visible": false, "region": "us-east-1" } ],
+                    [ { "expression": "SORT(lambda, SUM, DESC)", "label": "[sum: ${!SUM}]", "id": "sort", "stat": "Sum", "region": "us-east-1" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Lambda functions: by invocations",
+                "yAxis": {
+                    "left": {
+                        "label": "Count",
+                        "showUnits": false
+                    }
+                }
+            }
+        },
+        {
+            "type": "metric",
+            "width": 12,
+            "height": 9,
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Duration\"', 'p90', 300)", "id": "lambda", "region": "us-east-1", "visible": false } ],
+                    [ { "expression": "SORT(lambda, AVG, DESC)", "label": "[avg: ${!AVG}ms]", "id": "sort", "region": "us-east-1" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "period": 300,
+                "title": "Lambda functions: by duration (p90)",
+                "stat": "Average",
+                "yAxis": {
+                    "left": {
+                        "label": "Milliseconds",
+                        "showUnits": false
+                    }
+                }
+            }
+        },
+        {
+            "type": "metric",
+            "width": 12,
+            "height": 9,
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Errors\"', 'Sum', 300)", "id": "lambda", "period": 300, "visible": false, "region": "us-east-1" } ],
+                    [ { "expression": "SORT(lambda, SUM, DESC)", "label": "[sum: ${!SUM}]", "id": "sort", "stat": "Sum", "region": "us-east-1" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Lambda functions: by errors",
+                "yAxis": {
+                    "left": {
+                        "label": "Count",
+                        "showUnits": false
+                    }
+                }
+            }
+        },
+        {
+            "type": "metric",
+            "width": 12,
+            "height": 9,
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH('{AWS/Lambda,FunctionName} MetricName=\"Throttles\"', 'Sum', 300)", "id": "lambda", "period": 300, "visible": false, "region": "us-east-1" } ],
+                    [ { "expression": "SORT(lambda, SUM, DESC)", "label": "[sum: ${!SUM}]", "id": "sort", "stat": "Sum", "region": "us-east-1" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Lambda functions: by throttles",
+                "yAxis": {
+                    "left": {
+                        "label": "Count",
+                        "showUnits": false
+                    }
+                }
+            }
+        }
+    ]
+}

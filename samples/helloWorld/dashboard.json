@@ -1,0 +1,34 @@
+{
+    "widgets": [
+        {
+            "type": "custom",
+            "width": 8,
+            "height": 8,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}"
+            }
+        },
+        {
+            "type": "custom",
+            "width": 8,
+            "height": 8,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "name": "Jim"
+                }
+            }
+        },
+        {
+            "type": "custom",
+            "width": 8,
+            "height": 8,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "name": "Mary"
+                }
+            }
+        }
+    ]
+}

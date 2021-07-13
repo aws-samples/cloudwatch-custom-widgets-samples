@@ -1,0 +1,21 @@
+{
+    "start": "-PT1H",
+    "widgets": [
+        {
+            "type": "custom",
+            "width": 24,
+            "height": 18,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "maxInstances": 10
+                },
+                "updateOn": {
+                    "refresh": true,
+                    "timeRange": true
+                },
+                "title": "Top EC2 Instances by CPU"
+            }
+        }
+    ]
+}

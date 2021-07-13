@@ -1,0 +1,26 @@
+{
+    "widgets": [
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 8,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "echo": "<h1>Echo echo echo</h1>"
+                }
+            }
+        },
+        {
+            "type": "custom",
+            "width": 12,
+            "height": 8,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "echo": "<h2 style='color:red';>Input:</h2><input type='text' value='echo'>"
+                }
+            }
+        }
+    ]
+}

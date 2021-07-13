@@ -1,0 +1,41 @@
+{
+    "start": "-P30D",
+    "widgets": [
+        {
+            "type": "custom",
+            "width": 24,
+            "height": 8,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "updateOn": {
+                    "refresh": true,
+                    "timeRange": true
+                },
+                "title": "Cost Explorer Report - change time range to see report change"
+            }
+        },
+        {
+            "type": "metric",
+            "width": 24,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH('{AWS/Billing,Currency,ServiceName} MetricName=\"EstimatedCharges\"', 'Average', 86400)", "id": "e1", "region": "us-east-1", "visible": false } ],
+                    [ { "expression": "SORT(e1, MAX, DESC)", "label": "[${!MAX}]", "id": "e2", "region": "us-east-1" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "stat": "Average",
+                "period": 300,
+                "title": "Max daily cost - over time",
+                "yAxis": {
+                    "left": {
+                        "label": "$",
+                        "showUnits": false
+                    }
+                }
+            }
+        }
+    ]
+}

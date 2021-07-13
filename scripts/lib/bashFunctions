@@ -1,0 +1,14 @@
+#!/bin/bash
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
+function readArgsIntoVars {
+    for arg in "$@"
+    do
+        if [[ "$arg" == --* ]]; then
+            id=$(echo "$arg" | sed 's/=.*//;s/^[-]*//;s/-/_/g')
+            val=$(echo "$arg" | sed 's/^[^=]*$/1/;s/^[^=]*=//')
+            readonly "$id=$val"
+        fi
+    done
+}

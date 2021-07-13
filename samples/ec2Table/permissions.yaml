@@ -1,0 +1,10 @@
+  - PolicyDocument:
+      Version: 2012-10-17
+      Statement:
+        - Action:
+            - cloudwatch:GetMetricData
+            - ec2:DescribeInstances
+          Effect: Allow
+          Resource:
+            - "*"
+    PolicyName: getEC2InstanceAndMetricData

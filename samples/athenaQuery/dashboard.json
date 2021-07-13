@@ -1,0 +1,21 @@
+{
+    "widgets": [
+        {
+            "type": "custom",
+            "width": 24,
+            "height": 18,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "region": "${AWS::Region}",
+                    "database": "default",
+                    "sql": "select eventtime, eventsource, eventname, awsregion, sourceipaddress, errorcode, errormessage from sampledb.cloudtrail_logs limit 10"
+                },
+                "updateOn": {
+                    "refresh": true
+                },
+                "title": "Athena Query, ${AWS::Region}"
+            }
+        }
+    ]
+}

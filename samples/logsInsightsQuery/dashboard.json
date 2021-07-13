@@ -1,0 +1,23 @@
+{
+    "start": "-PT1H",
+    "widgets": [
+        {
+            "type": "custom",
+            "width": 24,
+            "height": 18,
+            "properties": {
+                "endpoint": "${lambdaFunction.Arn}",
+                "params": {
+                    "region": "${AWS::Region}",
+                    "logGroups": "/aws/lambda/${AWS::StackName}",
+                    "query": "fields @timestamp, @message | sort @timestamp desc | limit 20"
+                },
+                "updateOn": {
+                    "refresh": true,
+                    "timeRange": true
+                },
+                "title": "Logs Insights Query, ${AWS::Region}"
+            }
+        }
+    ]
+}

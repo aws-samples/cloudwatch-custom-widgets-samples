@@ -1,0 +1,10 @@
+  - PolicyDocument:
+      Version: 2012-10-17
+      Statement:
+        - Action:
+            - codedeploy:BatchGetDeployments
+            - codedeploy:ListDeployments
+          Effect: Allow
+          Resource:
+            - "*"
+    PolicyName: viewCodeDeployments

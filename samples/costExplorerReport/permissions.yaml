@@ -1,0 +1,9 @@
+  - PolicyDocument:
+      Version: 2012-10-17
+      Statement:
+        - Action:
+            - ce:GetCostAndUsage
+          Effect: Allow
+          Resource:
+            - "*"
+    PolicyName: costExplorerGetCostAndUsage
