@@ -21,4 +21,3 @@ def lambda_handler(event, context):
         return DOCS 
 
     return event.get('echo', '<pre>No "echo" parameter specified</pre>')
-    return f'<h1>Hello {name}</h1>'

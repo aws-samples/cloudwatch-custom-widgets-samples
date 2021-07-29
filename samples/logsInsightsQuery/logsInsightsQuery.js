@@ -4,6 +4,10 @@
 // CloudWatch Custom Widget sample: display results of Athena queries
 const aws = require('aws-sdk')
 
+const CHECK_QUERY_STATUS_DELAY_MS = 250;
+const CSS = '<style>td { white-space: nowrap; }</style>'
+const ORIGINAL_QUERY = 'fields @timestamp, @message | sort @timestamp desc | limit 20';
+
 const DOCS = `
 ## Run Logs Insights Query
 Runs a Logs Insights query and displays results in a table.
@@ -18,13 +22,10 @@ Param | Description
 ### Example parameters
 \`\`\` yaml
 logGroups: ${process.env.AWS_LAMBDA_LOG_GROUP_NAME}
-query: 'fields @timestamp, @message | sort @timestamp desc | limit 20'
+query: '${ORIGINAL_QUERY}'
 region: ${process.env.AWS_REGION}
 \`\`\`
 `;
-
-const CHECK_QUERY_STATUS_DELAY_MS = 250;
-const CSS = '<style>td { white-space: nowrap; }</style>'
 
 const runQuery = async (logsClient, logGroups, queryString, startTime, endTime) => {
     const startQuery = await logsClient.startQuery({
@@ -60,6 +61,10 @@ const displayResults = async (logGroups, query, results, context) => {
         </table></form>
         <a class="btn btn-primary">Run query</a>
         <cwdb-action action="call" endpoint="${context.invokedFunctionArn}"></cwdb-action>
+        <a class="btn">Reset to original query</a>
+        <cwdb-action action="call" endpoint="${context.invokedFunctionArn}">
+            { "resetQuery": true }
+        </cwdb-action>
         <p>
         <h2>Results</h2>
     `;
@@ -91,10 +96,15 @@ exports.handler = async (event, context) => {
     const widgetContext = event.widgetContext;
     const form = widgetContext.forms.all;
     const logGroups = form.logGroups || event.logGroups;
-    const query = form.query || event.query;
     const region = widgetContext.params.region || event.region || process.env.AWS_REGION;
     const timeRange = widgetContext.timeRange.zoom || widgetContext.timeRange;
     const logsClient = new aws.CloudWatchLogs({ region });
+    const resetQuery = event.resetQuery;
+    
+    let query = form.query || event.query;
+    if (resetQuery) {
+        query = widgetContext.params.query || ORIGINAL_QUERY;
+    }
 
     let results;
 
