@@ -210,7 +210,7 @@ General definition:
 | **confirmation** | _message_ | Displays a confirmation message that needs to be acknowledged before the action is taken (allowing customer to cancel) |
 | **display** | popup &#124; widget | Where should action result be displayed. Can be either in a _popup_ or (default) replace the content of the _widget_ itself |
 | **endpoint** | _arn of lambda function_ | The ARN of the Lambda function to call. Required if **action** is set to **call** |
-| **event** | click &#124; dblclick &#124; mouseenter | The event on the previous element which triggers the action, defaults to _click_ |
+| **event** | click &#124; dblclick &#124; mouseenter | The event on the previous element which triggers the action. The _mouseenter_ event can be used only in combination with the _html_ action. The default is _click_ |
 
 <h3 id="cwdb-action-examples">cwdb-action: Examples</h3>
 
