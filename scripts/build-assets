@@ -34,7 +34,7 @@ for sampleDir in $SAMPLES_DIR/*/ ; do
 
         if [ $extension == 'js' ]; then
             handler="index.handler"
-            runtime="nodejs12.x"
+            runtime="nodejs16.x"
         else
             handler="index.lambda_handler"
             runtime="python3.7"       # python 3.8 doesn't suport inline zipfile yet
