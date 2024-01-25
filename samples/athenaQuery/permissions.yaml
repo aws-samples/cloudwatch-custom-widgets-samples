@@ -9,7 +9,7 @@
           - s3:ListMultipartUploadParts
           - s3:DeleteObject
           Resource:
-          - !Sub arn:aws:s3:::aws-cw-widget-athena-query-results-${AWS::AccountId}-${AWS::Region}/*
+          - !Sub arn:${AWS::Partition}:s3:::aws-cw-widget-athena-query-results-${AWS::AccountId}-${AWS::Region}/*
         - Effect: Allow
           Action:
           - s3:GetBucketLocation
@@ -18,7 +18,7 @@
           - s3:ListBucketMultipartUploads
           - s3:DeleteObject
           Resource:
-          - !Sub arn:aws:s3:::aws-cw-widget-athena-query-results-${AWS::AccountId}-${AWS::Region}
+          - !Sub arn:${AWS::Partition}:s3:::aws-cw-widget-athena-query-results-${AWS::AccountId}-${AWS::Region}
         - Effect: Allow
           Action:
           - athena:*
