@@ -37,7 +37,7 @@ for sampleDir in $SAMPLES_DIR/*/ ; do
             runtime="nodejs16.x"
         else
             handler="index.lambda_handler"
-            runtime="python3.7"       # python 3.8 doesn't suport inline zipfile yet
+            runtime="python3.12"
         fi
 
         # Create CloudFormation template
