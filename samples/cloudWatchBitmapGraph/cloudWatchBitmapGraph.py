@@ -8,7 +8,7 @@ import datetime
 import json
 import os
 
-DOCS = """
+DOCS = f"""
 ## Display a CloudWatch bitmap graph
 Displays CloudWatch metrics as a bitmap, for faster display of metrics.
 
@@ -23,7 +23,7 @@ graph:
   view: timeSeries
   metrics:
   - [ AWS/Lambda, Invocations ]
-  region: {os.environ("AWS_REGION")}
+  region: {os.environ.get("AWS_REGION")}
 ```"""
 
 def lambda_handler(event, context):

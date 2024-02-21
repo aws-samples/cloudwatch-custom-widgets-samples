@@ -37,7 +37,7 @@ for sampleDir in $SAMPLES_DIR/*/ ; do
             runtime="nodejs16.x"
         else
             handler="index.lambda_handler"
-            runtime="python3.12"
+            runtime="python3.11"
         fi
 
         # Create CloudFormation template

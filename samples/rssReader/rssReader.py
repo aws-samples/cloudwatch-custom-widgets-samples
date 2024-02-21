@@ -22,7 +22,7 @@ Param | Description
 
 ### Example parameters
 ``` yaml
-url: http://status.aws.amazon.com/rss/cloudwatch-us-east-1.rss
+url: https://aws.amazon.com/blogs/aws/feed/
 entryTag: ./channel/item
 fields: [ title, pubDate, description ]
 ```"""
