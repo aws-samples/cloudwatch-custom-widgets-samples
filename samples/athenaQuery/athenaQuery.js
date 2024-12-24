@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 
 // CloudWatch Custom Widget sample: display results of Athena queries
-const aws = require('aws-sdk')
+const { AthenaClient, StartQueryExecutionCommand, GetQueryExecutionCommand, GetQueryResultsCommand } = require("@aws-sdk/client-athena");
 
 const DOCS = `
 ## Run Athena Query
@@ -36,20 +36,23 @@ const executeQuery = async (athena, accountId, region, querySQL, database)  => {
             Database: database
         }
     };
-  
-    const query = await athena.startQueryExecution(params).promise();
-  
+
+    const startQueryCommand = new StartQueryExecutionCommand(params);
+    const query = await athena.send(startQueryCommand);
+
     // Wait until query is finished execution.
     await checkQueryStatus(athena, query);
-    return await athena.getQueryResults({ QueryExecutionId: query.QueryExecutionId }).promise();
+    const getQueryResultsCommand = new GetQueryResultsCommand({ QueryExecutionId: query.QueryExecutionId });
+    return await athena.send(getQueryResultsCommand);
 }
 
 const checkQueryStatus = async (athena, query) => {
     let finished = false;
     while (!finished) {
         await sleep(CHECK_QUERY_STATUS_DELAY_MS);
-    
-        const response = await athena.getQueryExecution(query).promise();
+
+        const getQueryExecutionCommand = new GetQueryExecutionCommand(query);
+        const response = await athena.send(getQueryExecutionCommand);
         const queryStatus = response.QueryExecution.Status.State;
         switch (queryStatus) {
             case 'SUCCEEDED':
@@ -86,25 +89,25 @@ const displayResults = async (database, sql, results, region, context) => {
     if (results && results.ResultSet && results.ResultSet.ResultSetMetadata) {
         const cols = results.ResultSet.ResultSetMetadata.ColumnInfo;
         const rows = results.ResultSet.Rows.slice(1);
-        
+
         html += `
             <table><thead><tr><th>${cols.map(col => col.Label).join('</th><th>')}</th></tr></thead><tbody>`;
-  
+
         rows.forEach(row => {
             html += `<tr><td>${row.Data.map(cell => cell.VarCharValue || '').join('</td><td>')}</td></tr>`;
         });
-  
+
         html += `</tbody></table>`
     } else if (results) {
         html += `<pre>${results}</pre>`;
     }
-    
+
     return html;
 };
 
 exports.handler = async (event, context) => {
     if (event.describe) {
-        return DOCS;   
+        return DOCS;
     }
 
     const form = event.widgetContext.forms.all;
@@ -112,7 +115,7 @@ exports.handler = async (event, context) => {
     const sql = form.sql || event.sql;
     const region = event.region || process.env.AWS_REGION;
     const accountId = context.invokedFunctionArn.split(":")[4];
-    const athena = new aws.Athena({ region });
+    const athena = new AthenaClient({ region });
 
     let results;
 
@@ -126,4 +129,3 @@ exports.handler = async (event, context) => {
 
     return CSS + await displayResults(database, sql, results, region, context);
 };
-

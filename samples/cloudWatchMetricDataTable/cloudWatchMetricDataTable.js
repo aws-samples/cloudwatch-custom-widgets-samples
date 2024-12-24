@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 
 // CloudWatch Custom Widget sample: display CloudWatch metric data as a table
-const aws = require('aws-sdk');
+const { CloudWatchClient, GetMetricDataCommand } = require("@aws-sdk/client-cloudwatch");
 
 const DOCS = `
 ## Display CloudWatch metric data in a table
@@ -36,10 +36,10 @@ const orderData = data => {
     data.forEach(metricResult => {
         const timestampsToValues = {};
         metricResult.Timestamps.forEach((timestamp, i) => {
-           allTimestamps[timestamp] = []
-           timestampsToValues[timestamp] = metricResult.Values[i];
-       });
-       allTimestampsToValues.push(timestampsToValues);
+            allTimestamps[timestamp] = []
+            timestampsToValues[timestamp] = metricResult.Values[i];
+        });
+        allTimestampsToValues.push(timestampsToValues);
     });
 
     return { allTimestamps: Object.keys(allTimestamps).sort(), allTimestampsToValues };
@@ -59,22 +59,24 @@ const tableStart = allTimestamps => {
 
 exports.handler = async (event) => {
     if (event.describe) {
-        return DOCS;   
+        return DOCS;
     }
 
     const widgetContext = event.widgetContext;
     const timeRange = widgetContext.timeRange.zoom || widgetContext.timeRange;
     const start = new Date(timeRange.start);
     const end = new Date(timeRange.end);
-    const params = { 
+    const params = {
         MetricDataQueries: event.MetricDataQueries,
-        StartTime: start, 
+        StartTime: start,
         EndTime: end
-    }; 
+    };
     const region = event.region;
 
-    const cloudwatch = new aws.CloudWatch({ region });
-    const gmdResponse  = await cloudwatch.getMetricData(params).promise(); 
+    const cloudwatch = new CloudWatchClient({ region });
+    const command = new GetMetricDataCommand(params);
+
+    const gmdResponse = await cloudwatch.send(command);
     const data = gmdResponse.MetricDataResults;
     const { allTimestamps, allTimestampsToValues } = orderData(data);
 
@@ -88,6 +90,6 @@ exports.handler = async (event) => {
         html += `<td>${values.join('</td><td>')}</td></tr>`;
         return html;
     });
-    
-    return CSS + tableStart(allTimestamps) + `<tbody>${metricRows.join('')}</tbody></table>`;    
+
+    return CSS + tableStart(allTimestamps) + `<tbody>${metricRows.join('')}</tbody></table>`;
 };
