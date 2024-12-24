@@ -44,7 +44,7 @@ exports.handler = async (event) => {
 
         const client = new ServiceClient({ region });
 
-        const { [api.toUpperCase() + 'Command']: Command } = await import(`@aws-sdk/client-${service.toLowerCase()}`);
+        const { [api + 'Command']: Command } = await import(`@aws-sdk/client-${service.toLowerCase()}`);
         const command = new Command(params);
 
         const response = await client.send(command);
