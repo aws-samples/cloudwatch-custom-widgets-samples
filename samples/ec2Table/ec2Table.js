@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: MIT-0
 
 // CloudWatch Custom Widget sample: display EC2 Instances by CPU Utilization
-const aws = require('aws-sdk');
+const { EC2Client, DescribeInstancesCommand, RebootInstancesCommand } = require("@aws-sdk/client-ec2");
+const { CloudWatchClient, GetMetricDataCommand } = require("@aws-sdk/client-cloudwatch");
 
 const DOCS = `## EC2 Table
 Displays top running EC2 instances by CPU Utilization.
@@ -19,7 +20,8 @@ async function getInstances(ec2) {
 
     do {
         const args = { Filters: [ { Name: 'instance-state-name', Values: [ 'running' ]} ], NextToken };
-        const result = await ec2.describeInstances(args).promise();
+        const command = new DescribeInstancesCommand(args);
+        const result = await ec2.send(command);
         NextToken = result.NextToken;
         result.Reservations.forEach(res => {
             instances = instances.concat(res.Instances);
@@ -31,7 +33,8 @@ async function getInstances(ec2) {
 
 async function reboot(ec2, instanceId) {
     try {
-        await ec2.rebootInstances({ InstanceIds: [ instanceId ] }).promise();
+        const command = new RebootInstancesCommand({ InstanceIds: [ instanceId ] });
+        await ec2.send(command);
         return `Reboot was successfully trigger on the following instances: <b>${instanceId}</b>.`;
     } catch (e) {
         return `Error rebooting instance. Note that the custom widget Lambda function's IAM role requires <code>ec2:rebootInstances</code> permission`;
@@ -41,10 +44,10 @@ async function reboot(ec2, instanceId) {
 async function addCpu(cw, instances, StartTime, EndTime) {
     const Period = Math.floor((EndTime.getTime() - StartTime.getTime()) / 1000)
     const metrics = instances.map((instance, i) => {
-        return { 
+        return {
             Id: `i${i}`,
             MetricStat: { Metric: {
-                    Namespace: 'AWS/EC2', MetricName: 'CPUUtilization', 
+                    Namespace: 'AWS/EC2', MetricName: 'CPUUtilization',
                     Dimensions: [ { Name: 'InstanceId', Value: instance.InstanceId } ]
                 },
                 Stat: 'Average', Period
@@ -52,7 +55,8 @@ async function addCpu(cw, instances, StartTime, EndTime) {
         };
     });
     for (let i = 0; i < metrics.length; i += 500) {
-        const result = await cw.getMetricData({ MetricDataQueries: metrics.slice(i, i + 500), StartTime, EndTime}).promise();
+        const command = new GetMetricDataCommand({ MetricDataQueries: metrics.slice(i, i + 500), StartTime, EndTime});
+        const result = await cw.send(command);
         result.MetricDataResults.forEach(metric => {
             const index = parseInt(metric.Id.slice(1));
             instances[index].cpu = metric.Values.pop();
@@ -96,8 +100,8 @@ exports.handler = async (event, context) => {
     const StartTime = new Date(timeRange.start);
     const EndTime = new Date(timeRange.end);
     const region = event.region || process.env.AWS_REGION;
-    const ec2 = new aws.EC2({ region });
-    const cw = new aws.CloudWatch({ region })
+    const ec2 = new EC2Client({ region });
+    const cw = new CloudWatchClient({ region })
 
     if (event.action === 'Reboot') {
         return await reboot(ec2, event.instanceId);

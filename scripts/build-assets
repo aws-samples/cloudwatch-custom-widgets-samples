@@ -34,7 +34,7 @@ for sampleDir in $SAMPLES_DIR/*/ ; do
 
         if [ $extension == 'js' ]; then
             handler="index.handler"
-            runtime="nodejs16.x"
+            runtime="nodejs22.x"
         else
             handler="index.lambda_handler"
             runtime="python3.12"

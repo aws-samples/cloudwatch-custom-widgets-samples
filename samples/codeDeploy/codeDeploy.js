@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 
 // CloudWatch Custom Widget sample: display CodeDeploy deployments
-const aws = require('aws-sdk');
+const { CodeDeployClient, ListDeploymentsCommand, BatchGetDeploymentsCommand } = require("@aws-sdk/client-codedeploy");
 
 const CSS = '<style>td { white-space: nowrap; }</style>';
 
@@ -34,8 +34,8 @@ async function getDeploymentIds(codeDeployClient, start, end) {
     let results = [];
 
     do {
-        const args = { createTimeRange: { start, end }, nextToken };
-        const result = await codeDeployClient.listDeployments(args).promise();
+        const command = new ListDeploymentsCommand({ createTimeRange: { start, end }, nextToken });
+        const result = await codeDeployClient.send(command);
         nextToken = result.nextToken;
         results = results.concat(result.deployments);
     } while (nextToken);
@@ -47,7 +47,8 @@ async function getDeployments(codeDeployClient, start, end) {
     let results = [];
     while (deploymentIds.length > 0) {
         const deploymentsToQuery = deploymentIds.splice(0, Math.min(deploymentIds.length, 25));
-        const response = await codeDeployClient.batchGetDeployments({ deploymentIds: deploymentsToQuery }).promise();
+        const command = new BatchGetDeploymentsCommand({ deploymentIds: deploymentsToQuery });
+        const response = await codeDeployClient.send(command);
         results = results.concat(response.deploymentsInfo);
     }
 
@@ -88,7 +89,7 @@ exports.handler = async (event) => {
     if (event.describe) {
         return DOCS;
     }
-    const codeDeployClient = new aws.CodeDeploy({ region: event.region || process.env.AWS_REGION });
+    const codeDeployClient = new CodeDeployClient({ region: event.region || process.env.AWS_REGION });
     const timeRange = event.widgetContext.timeRange.zoom || event.widgetContext.timeRange;
     const deployments = await getDeployments(codeDeployClient, timeRange.start / 1000, timeRange.end / 1000);
     return getHtmlOutput(deployments, event);

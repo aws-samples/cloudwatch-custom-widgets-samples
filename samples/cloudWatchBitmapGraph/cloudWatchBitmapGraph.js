@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 
 // CloudWatch Custom Widget sample: display a CloudWatch metric graph as bitmap
-const aws = require('aws-sdk');
+const { CloudWatchClient, GetMetricWidgetImageCommand } = require("@aws-sdk/client-cloudwatch");
 
 const DOCS = `
 ## Display a CloudWatch bitmap graph
@@ -25,7 +25,7 @@ graph:
 
 exports.handler = async (event) => {
     if (event.describe) {
-        return DOCS;   
+        return DOCS;
     }
 
     const widgetContext = event.widgetContext;
@@ -38,13 +38,20 @@ exports.handler = async (event) => {
     if (!graph.theme) {
         graph.theme = widgetContext.theme;
     }
-    const params = { 
-        MetricWidget: JSON.stringify(graph) 
-    }; 
+    const params = {
+        MetricWidget: JSON.stringify(graph)
+    };
     const region = event.graph.region;
-    const cloudwatch = new aws.CloudWatch({ region });
-    const image = await cloudwatch.getMetricWidgetImage(params).promise(); 
-    const base64Image = Buffer.from(image.MetricWidgetImage).toString('base64');  
 
-    return `<img src="data:image/png;base64,${base64Image}">`;
+    const cloudwatch = new CloudWatchClient({ region });
+    const command = new GetMetricWidgetImageCommand(params);
+
+    try {
+        const response = await cloudwatch.send(command);
+        const base64Image = Buffer.from(response.MetricWidgetImage).toString('base64');
+        return `<img src="data:image/png;base64,${base64Image}">`;
+    } catch (error) {
+        console.error("Error fetching metric widget image:", error);
+        return `<p>Error fetching metric widget image: ${error.message}</p>`;
+    }
 };

@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-// CloudWatch Custom Widget sample: display results of Athena queries
-const aws = require('aws-sdk')
+// CloudWatch Custom Widget sample: display results of Logs Insights queries
+const { CloudWatchLogsClient, StartQueryCommand, GetQueryResultsCommand } = require("@aws-sdk/client-cloudwatch-logs");
 
 const CHECK_QUERY_STATUS_DELAY_MS = 250;
 const CSS = '<style>td { white-space: nowrap; }</style>'
@@ -28,16 +28,18 @@ region: ${process.env.AWS_REGION}
 `;
 
 const runQuery = async (logsClient, logGroups, queryString, startTime, endTime) => {
-    const startQuery = await logsClient.startQuery({
-            logGroupNames: logGroups.replace(/\s/g, '').split(','),
-            queryString,
-            startTime,
-            endTime
-        }).promise();
+    const startQueryCommand = new StartQueryCommand({
+        logGroupNames: logGroups.replace(/\s/g, '').split(','),
+        queryString,
+        startTime,
+        endTime
+    });
+    const startQuery = await logsClient.send(startQueryCommand);
     const queryId = startQuery.queryId;
 
     while (true) {
-        const queryResults = await logsClient.getQueryResults({ queryId }).promise();
+        const getQueryResultsCommand = new GetQueryResultsCommand({ queryId });
+        const queryResults = await logsClient.send(getQueryResultsCommand);
         if (queryResults.status !== 'Complete') {
             await sleep(CHECK_QUERY_STATUS_DELAY_MS);     // Sleep before calling again
         } else {
@@ -72,25 +74,25 @@ const displayResults = async (logGroups, query, results, context) => {
 
     if (results && results.length > 0) {
         const cols = stripPtr(results[0]).map(entry => entry.field);
-        
+
         html += `<table><thead><tr><th>${cols.join('</th><th>')}</th></tr></thead><tbody>`;
-  
+
         results.forEach(row => {
             const vals = stripPtr(row).map(entry => entry.value);
             html += `<tr><td>${vals.join('</td><td>')}</td></tr>`;
         });
-  
+
         html += `</tbody></table>`
     } else {
         html += `<pre>${JSON.stringify(results, null, 4)}</pre>`;
     }
-    
+
     return html;
 };
 
 exports.handler = async (event, context) => {
     if (event.describe) {
-        return DOCS;   
+        return DOCS;
     }
 
     const widgetContext = event.widgetContext;
@@ -98,9 +100,9 @@ exports.handler = async (event, context) => {
     const logGroups = form.logGroups || event.logGroups;
     const region = widgetContext.params.region || event.region || process.env.AWS_REGION;
     const timeRange = widgetContext.timeRange.zoom || widgetContext.timeRange;
-    const logsClient = new aws.CloudWatchLogs({ region });
+    const logsClient = new CloudWatchLogsClient({ region });
     const resetQuery = event.resetQuery;
-    
+
     let query = form.query || event.query;
     if (resetQuery) {
         query = widgetContext.params.query || ORIGINAL_QUERY;

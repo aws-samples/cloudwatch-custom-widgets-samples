@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT-0
 
 // CloudWatch Custom Widget sample: display an object from S3 bucket
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+
 const DOCS = `
 ## S3 Get Object
 Displays the content of a file (usually HTML) stored in S3 in the current account.
@@ -21,20 +23,26 @@ key: sample-report.html
 \`\`\`
 `;
 
-const aws = require('aws-sdk');
-
 exports.handler = async (event) => {
     if (event.describe) {
-        return DOCS;   
+        return DOCS;
     }
 
     const region = event.region || process.env.AWS_REGION;
     const params = {
-            Bucket: event.bucket,
-            Key: event.key
-        };
-    const s3 = new aws.S3({ region });
-    const result = await s3.getObject(params).promise();
+        Bucket: event.bucket,
+        Key: event.key
+    };
 
-    return result.Body.toString();
+    const s3Client = new S3Client({ region });
+    const command = new GetObjectCommand(params);
+
+    const response = await s3Client.send(command);
+    try {
+        const bodyContents = await response.Body.transformToString();
+        return bodyContents;
+    } catch (e) {
+        console.error(e);
+        return `Error fetching S3 object: ${e.message}`;
+    }
 };
